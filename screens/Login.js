@@ -14,8 +14,8 @@ const Login = ({ navigation }) => {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      // Verificar el cargo del usuario (aquí puedes implementar la lógica específica para tu base de datos o datos de usuario)
-      const userCargo = 'garzon'; // Supongamos que obtenemos el cargo del usuario desde la base de datos
+      // Obtener el cargo del usuario desde Firebase Authentication
+      const userCargo = user.displayName;
 
       // Redirigir a la pantalla correspondiente según el cargo del usuario
       switch (userCargo) {
@@ -26,7 +26,7 @@ const Login = ({ navigation }) => {
           navigation.navigate('CocineroScreen');
           break;
         case 'administrador':
-          navigation.navigate('AdministradorScreen');
+          navigation.navigate('AdminScreen');
           break;
         default:
           // En caso de que el cargo no esté definido, mostrar un mensaje de error

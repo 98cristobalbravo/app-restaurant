@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { getAuth, createUserWithEmailAndPassword, updateProfile } from '@firebase/auth';
 import { Picker as RNPicker } from '@react-native-picker/picker';
-import { getAuth, createUserWithEmailAndPassword } from '@firebase/auth';
 import firebase from '../config/firebase';
 
-const Registro = () => {
+const Registro = ({ navigation }) => {
   const [nombre, setNombre] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -15,13 +15,22 @@ const Registro = () => {
   const handleSignUp = async () => {
     try {
       const auth = getAuth();
-      await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      // Guardar el cargo como parte del displayName del usuario
+      await updateProfile(user, { displayName: cargo });
+
       setSuccessMessage(`Trabajador ${nombre} creado exitosamente como ${cargo}.`);
       setErrorMessage(null);
     } catch (error) {
       setErrorMessage('Error al registrar usuario: ' + error.message);
       setSuccessMessage(null);
     }
+  };
+
+  const navigateToLogin = () => {
+    navigation.navigate('Login');
   };
 
   return (
@@ -46,18 +55,22 @@ const Registro = () => {
         value={password}
         secureTextEntry
       />
-      
+
       <RNPicker
         selectedValue={cargo}
         style={styles.picker}
         onValueChange={(itemValue, itemIndex) => setCargo(itemValue)}>
+        <RNPicker.Item label="Selecciona un cargo" value="" />
         <RNPicker.Item label="Garzón" value="garzon" />
         <RNPicker.Item label="Cocinero" value="cocinero" />
         <RNPicker.Item label="Administrador" value="administrador" />
       </RNPicker>
-      
+
       <TouchableOpacity onPress={handleSignUp} style={styles.button}>
         <Text style={styles.buttonText}>Registrarse</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={navigateToLogin} style={styles.loginButton}>
+        <Text style={styles.loginButtonText}>¿Ya tienes una cuenta? Inicia sesión aquí</Text>
       </TouchableOpacity>
       {errorMessage && <Text style={styles.errorMessage}>{errorMessage}</Text>}
       {successMessage && <Text style={styles.successMessage}>{successMessage}</Text>}
@@ -95,7 +108,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
   },
-
   picker: {
     width: '80%',
     marginBottom: 10,
@@ -103,8 +115,12 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderRadius: 5,
   },
-
-
+  loginButton: {
+    marginTop: 20,
+  },
+  loginButtonText: {
+    color: 'blue',
+  },
   errorMessage: {
     color: 'red',
     marginTop: 10,
