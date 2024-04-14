@@ -7,11 +7,18 @@ const AdminScreen = ({ navigation }) => {
     navigation.navigate('Registro');
   };
 
+  const handleGoToMenu = () => {
+    navigation.navigate('CrearMenuScreen');
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Pantalla de Administrador</Text>
       <TouchableOpacity onPress={handleGoToRegister} style={styles.button}>
         <Text style={styles.buttonText}>Registrar nuevo usuario</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={handleGoToMenu} style={styles.button}>
+        <Text style={styles.buttonText}>Agregar Menú</Text>
       </TouchableOpacity>
     </View>
   );
