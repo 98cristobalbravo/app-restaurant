@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
-import { Picker } from '@react-native-picker/picker'; // Importamos Picker de @react-native-picker/picker
-
+import { Picker } from '@react-native-picker/picker';
 import { getDatabase, ref, push, onValue } from 'firebase/database';
 import firebase from '../config/firebase';
 
@@ -44,10 +43,14 @@ const CrearMenuScreen = () => {
     const db = getDatabase(firebase);
     const menuRef = ref(db, 'menu');
 
+    // Buscar el ID de la categoría seleccionada
+    const selectedCategoryId = categorias.find(categoria => categoria.nombre === selectedCategoria)?.id;
+
     const nuevoMenu = {
       nombre_comida: nombrePlato,
       precio_comida: precio,
-      categoria: selectedCategoria
+      categoria_id: selectedCategoryId, // Guardar el ID de la categoría
+      categoria: selectedCategoria // Guardar el nombre de la categoría
     };
 
     push(menuRef, nuevoMenu)
@@ -87,7 +90,7 @@ const CrearMenuScreen = () => {
       >
         <Picker.Item label="Seleccionar categoría" value="" />
         {categorias.map((categoria) => (
-          <Picker.Item key={categoria.id} label={categoria.nombre} value={categoria.id} />
+          <Picker.Item key={categoria.id} label={categoria.nombre} value={categoria.nombre} />
         ))}
       </Picker>
       <TouchableOpacity onPress={handleGuardarMenu} style={styles.button}>
@@ -105,13 +108,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 15,
     backgroundColor: '#fff',
-    alignItems: 'center', // Alineación al centro
+    alignItems: 'center',
   },
   title: {
     fontSize: 35,
     fontWeight: 'bold',
     marginBottom: 20,
-    textAlign: 'center', // Alineación al centro
+    textAlign: 'center',
   },
   input: {
     width: '80%',
@@ -146,12 +149,12 @@ const styles = StyleSheet.create({
   errorMessage: {
     color: 'red',
     marginTop: 10,
-    textAlign: 'center', // Alineación al centro
+    textAlign: 'center',
   },
   successMessage: {
     color: 'green',
     marginTop: 10,
-    textAlign: 'center', // Alineación al centro
+    textAlign: 'center',
   },
 });
 
