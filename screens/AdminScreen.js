@@ -12,7 +12,6 @@ const AdminScreen = ({ navigation }) => {
     const db = getDatabase(firebase);
     const categoriasRef = ref(db, 'categorias');
 
-    // Escuchar cambios en la base de datos para actualizar la lista de categorías
     onValue(categoriasRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
@@ -22,14 +21,12 @@ const AdminScreen = ({ navigation }) => {
         }));
         setCategorias(categoriasArray);
       } else {
-        // Si no hay categorías, establecer categorías como un array vacío
         setCategorias([]);
       }
     });
 
-    // Cleanup de la suscripción cuando el componente se desmonte
     return () => {
-      setCategorias([]); // Limpiamos la lista de categorías al desmontar el componente
+      setCategorias([]);
     };
   }, []);
 
@@ -37,8 +34,12 @@ const AdminScreen = ({ navigation }) => {
     navigation.navigate('Registro');
   };
 
-  const handleGoToMenu = () => {
+  const handleGoToCrearMenu = () => {
     navigation.navigate('CrearMenuScreen');
+  };
+
+  const handleGoToVerMenu = () =>{
+    navigation.navigate('VerMenuScreen');
   };
 
   const handleAgregarCategoria = () => {
@@ -47,10 +48,8 @@ const AdminScreen = ({ navigation }) => {
       return;
     }
 
-    // Convertir la primera letra a mayúscula y las siguientes letras a minúscula
     const categoriaNormalizada = nuevaCategoriaInput.trim().charAt(0).toUpperCase() + nuevaCategoriaInput.slice(1).toLowerCase();
 
-    // Verificar si la categoría ya existe en la lista de categorías normalizadas
     if (categorias.find(categoria => categoria.nombre === categoriaNormalizada)) {
       setErrorMessage('La categoría ya existe.');
       return;
@@ -96,7 +95,6 @@ const AdminScreen = ({ navigation }) => {
             const categoriaRef = ref(db, `categorias/${id}`);
             remove(categoriaRef)
               .then(() => {
-                // Actualizar el estado local eliminando la categoría eliminada
                 const updatedCategorias = categorias.filter(categoria => categoria.id !== id);
                 setCategorias(updatedCategorias);
                 setErrorMessage(null);
@@ -112,28 +110,30 @@ const AdminScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Pantalla de Administrador</Text>
+      <Text style={styles.title}>Funciones</Text>
       <TouchableOpacity onPress={handleGoToRegister} style={styles.button}>
         <Text style={styles.buttonText}>Registrar nuevo usuario</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={handleGoToMenu} style={styles.button}>
+      <TouchableOpacity onPress={handleGoToCrearMenu} style={styles.button}>
         <Text style={styles.buttonText}>Agregar Menú</Text>
       </TouchableOpacity>
-      <View style={styles.divider} />
+      <TouchableOpacity onPress={handleGoToVerMenu} style={styles.button}>
+        <Text style={styles.buttonText}>Ver Menú</Text>
+      </TouchableOpacity>
+      <Text style={styles.subtitle}>Agregar categoría a menú</Text>
       <TextInput
         style={styles.input}
-        placeholder="Ingresa categoría"
+        placeholder="Ingresa categoría Ej: Postres"
         onChangeText={text => setNuevaCategoriaInput(text)}
         value={nuevaCategoriaInput}
       />
       <TouchableOpacity onPress={handleAgregarCategoria} style={styles.button}>
-        <Text style={styles.buttonText}>Agregar Categoría de Menú</Text>
+        <Text style={styles.buttonText}>Agregar</Text>
       </TouchableOpacity>
 
       {errorMessage && <Text style={styles.errorMessage}>{errorMessage}</Text>}
       
-      {/* Lista de categorías */}
-      <Text style={styles.subtitle}>Categorías existentes:</Text>
+      <Text style={styles.subtitle}>Categorías de menú</Text>
       <ScrollView style={styles.scrollView}>
         <View style={styles.categoriesContainer}>
           {categorias.map(categoria => (
@@ -155,20 +155,25 @@ const AdminScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingTop: 15,
+    backgroundColor: '#fff',
   },
   title: {
-    fontSize: 20,
+    fontSize: 35,
+    fontWeight: 'bold',
     marginBottom: 20,
+    textAlign: 'left',
   },
   subtitle: {
-    fontSize: 18,
+    fontSize: 25,
+    fontWeight: 'bold',
     marginTop: 20,
     marginBottom: 10,
+    textAlign: 'left',
   },
   input: {
-    width: '80%',
+    width: '100%',
     padding: 10,
     marginBottom: 10,
     borderWidth: 1,
@@ -176,47 +181,46 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   button: {
-    width: '80%',
-    backgroundColor: 'blue',
-    padding: 10,
+    width: '100%',
+    backgroundColor: 'black',
+    padding: 15,
     borderRadius: 5,
     alignItems: 'center',
     marginTop: 10,
+    marginBottom: 10,
   },
   buttonText: {
-    color: '#fff',
+    color: 'white',
     fontWeight: 'bold',
+    fontSize: 17,
   },
   errorMessage: {
     color: 'red',
     marginTop: 10,
+    textAlign: 'left',
   },
   categoriesContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     marginTop: 10,
   },
   categoryButton: {
-    backgroundColor: 'lightblue',
-    paddingVertical: 10,
+    backgroundColor: 'white',
+    paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 10,
     margin: 5,
+    borderWidth: 1,
+    borderColor: 'purple',
   },
   categoryButtonText: {
     fontSize: 16,
-  },
-  divider: {
-    borderBottomWidth: 1,
-    borderBottomColor: '#999',
-    width: '50%',
-    marginTop: 20,
-    marginBottom: 20,
+    fontWeight: 'bold',
   },
   scrollView: {
-    maxHeight: 350, // Limitar la altura para que el ScrollView sea scrollable
-    width: '95%',
+    maxHeight: 250,
+    width: '100%',
   },
 });
 
