@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'rea
 import { getDatabase, ref, onValue, remove } from 'firebase/database';
 import firebase from '../config/firebase';
 
+/* test badge? */
 const VerMenuScreen = () => {
   const [menu, setMenu] = useState([]);
   const [categorias, setCategorias] = useState({});
