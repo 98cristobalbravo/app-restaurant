@@ -3,9 +3,9 @@ import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Alert } from 'rea
 
 const GarzonScreen = ({ navigation }) => {
   const [mesas, setMesas] = useState([
-    { id: 'Mesa 1', status: 'ocupada', personas: [] },
+    { id: 'Mesa 1', status: 'libre', personas: [] },
     { id: 'Mesa 2', status: 'libre', personas: [] },
-    { id: 'Mesa 3', status: 'ocupada', personas: [] },
+    { id: 'Mesa 3', status: 'libre', personas: [] },
   ]);
   const [pressedMesa, setPressedMesa] = useState(null);
 
@@ -39,7 +39,7 @@ const GarzonScreen = ({ navigation }) => {
 
   const updateMesas = (updatedMesa) => {
     const updatedMesas = [...mesas];
-    updatedMesas[updatedMesa.mesaIndex] = updatedMesa;
+    updatedMesas[updatedMesa.mesaIndex] = updatedMesa;z
     setMesas(updatedMesas);
   };
 
