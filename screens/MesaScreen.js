@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput, KeyboardAvoidingView } from 'react-native';
 import firebase from '../config/firebase';
 import { getDatabase, ref, onValue } from 'firebase/database';
 
@@ -10,6 +10,7 @@ const MesaScreen = ({ route, navigation }) => {
   const [errorMessage, setErrorMessage] = useState(null);
   const [personas, setPersonas] = useState([]);
   const [expanded, setExpanded] = useState(false); // Estado para controlar la expansión
+  const [detallesPedido, setDetallesPedido] = useState(""); // Estado para almacenar los detalles adicionales ingresados por el usuario
 
   useEffect(() => {
     const db = getDatabase(firebase);
@@ -42,8 +43,9 @@ const MesaScreen = ({ route, navigation }) => {
 
   const handleAgregarPlato = () => {
     const nuevaPersona = {
-      id: `Persona ${personas.length + 1}`, // Generar un nuevo identificador único
-      seleccionados: {}
+      id: Date.now().toString(), // Generar un nuevo identificador único
+      seleccionados: {},
+      detalles: [] // Inicializar el array de detalles
     };
     setPersonas([...personas, nuevaPersona]);
   };
@@ -72,6 +74,18 @@ const MesaScreen = ({ route, navigation }) => {
     setPersonas(nuevasPersonas);
   };
 
+  const handleGuardarDetalles = () => {
+    // Agregar detalles adicionales al pedido de la última persona
+    const nuevaPersona = personas[personas.length - 1];
+    if (nuevaPersona) {
+      const nuevosDetalles = [...nuevaPersona.detalles, detallesPedido]; // Agregar el nuevo detalle al array de detalles
+      const personaActualizada = { ...nuevaPersona, detalles: nuevosDetalles };
+      const nuevasPersonas = [...personas.slice(0, -1), personaActualizada];
+      setPersonas(nuevasPersonas);
+      setDetallesPedido(""); // Limpiar el input de detalles
+    }
+  };
+
   const categoriasPlatos = {};
   Object.values(menu).forEach((plato) => {
     const categoria = categorias[plato.categoria_id]?.nombre_categoria || 'Otro';
@@ -84,66 +98,86 @@ const MesaScreen = ({ route, navigation }) => {
   const categoriasOrdenadas = Object.keys(categoriasPlatos).sort();
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>MESA {mesaNumero}</Text>
-      <TouchableOpacity style={styles.button} onPress={handleAgregarPlato}>
-        <Text style={styles.buttonText}>Agregar Persona</Text>
-      </TouchableOpacity>
-      {/* Botón para expandir/comprimir */}
-      <TouchableOpacity style={styles.expandButton} onPress={() => setExpanded(!expanded)}>
-        <Text style={styles.buttonText}>{expanded ? 'Comprimir' : 'Expandir'}</Text>
-      </TouchableOpacity>
-      <View style={[styles.personasContainer, expanded && { maxHeight: null }]}>
-        <ScrollView horizontal={!expanded} style={{ flexDirection: 'row' }}>
-          {personas.map(persona => (
-            <View key={persona.id} style={styles.personaContainer}>
-              <TouchableOpacity onPress={() => handleEliminarPersona(persona.id)}>
-                <Text style={{ color: 'red', marginTop: 1, marginBottom: 1, textAlign: 'center' }}>Eliminar</Text>
-              </TouchableOpacity>
-              <Text style={styles.personaTitle}>{persona.id}</Text>
-              <View style={styles.personaPlatosContainer}>
-                {Object.entries(persona.seleccionados).map(([platoId, cantidad]) => (
-                  <Text key={platoId} style={styles.personaPlato}>{cantidad} - {menu.find(plato => plato.id === platoId).nombre_comida}</Text>
-                ))}
+    <KeyboardAvoidingView behavior="height" style={styles.container}>
+      <ScrollView contentContainerStyle={styles.scrollViewContent}>
+        <Text style={styles.title}>MESA {mesaNumero}</Text>
+        <TouchableOpacity style={styles.button} onPress={handleAgregarPlato}>
+          <Text style={styles.buttonText}>Agregar Pedido</Text>
+        </TouchableOpacity>
+        {/* Botón para expandir/comprimir */}
+        <TouchableOpacity style={styles.expandButton} onPress={() => setExpanded(!expanded)}>
+          <Text style={styles.buttonText}>{expanded ? 'Comprimir' : 'Expandir'}</Text>
+        </TouchableOpacity>
+        <View style={[styles.personasContainer, expanded && { maxHeight: null }]}>
+          <ScrollView horizontal={!expanded} style={{ flexDirection: 'row' }}>
+            {personas.map(persona => (
+              <View key={persona.id} style={styles.personaContainer}>
+                <TouchableOpacity onPress={() => handleEliminarPersona(persona.id)}>
+                  <Text style={{ color: 'red', marginTop: 1, marginBottom: 1, textAlign: 'center' }}>Eliminar</Text>
+                </TouchableOpacity>
+                <Text style={styles.personaTitle}>{persona.id}</Text>
+                <View style={styles.personaPlatosContainer}>
+                  {Object.entries(persona.seleccionados).map(([platoId, cantidad]) => (
+                    <Text key={platoId} style={styles.personaPlato}>{cantidad} - {menu.find(plato => plato.id === platoId).nombre_comida}</Text>
+                  ))}
+                  {persona.detalles && persona.detalles.map((detalle, index) => (
+                    <Text key={index} style={styles.personaPlato}>Detalle: {detalle}</Text>
+                  ))}
+                </View>
               </View>
+            ))}
+          </ScrollView>
+        </View>
+
+        <View style={styles.menuContainer}>
+          {categoriasOrdenadas.map((categoria) => (
+            <View key={categoria} style={styles.categoriaContainer}>
+              <Text style={styles.categoria}>{categoria}</Text>
+              {categoriasPlatos[categoria].map((plato, index) => (
+                <TouchableOpacity key={index} style={styles.platoContainer} onPress={() => handleSeleccionPlato(plato, personas.length ? personas[personas.length - 1].id : null)}>
+                  <View style={styles.platoInfo}>
+                    <Text style={styles.platoNombre}>{plato.nombre_comida}</Text>
+                    <Text style={styles.platoPrecio}>${plato.precio_comida}</Text>
+                  </View>
+                </TouchableOpacity>
+              ))}
             </View>
           ))}
-        </ScrollView>
-      </View>
+        </View>
+        
+        {/* Input para detalles adicionales */}
+        <View style={styles.detallesContainer}>
+          <TextInput
+            style={styles.input}
+            value={detallesPedido}
+            onChangeText={setDetallesPedido}
+            placeholder="Detalles adicionales..."
+          />
+          <TouchableOpacity style={styles.button} onPress={handleGuardarDetalles}>
+            <Text style={styles.buttonText}>Agregar</Text>
+          </TouchableOpacity>
+        </View>
 
-      <View style={styles.menuContainer}>
-        {categoriasOrdenadas.map((categoria) => (
-          <View key={categoria} style={styles.categoriaContainer}>
-            <Text style={styles.categoria}>{categoria}</Text>
-            {categoriasPlatos[categoria].map((plato, index) => (
-              <TouchableOpacity key={index} style={styles.platoContainer} onPress={() => handleSeleccionPlato(plato, personas.length ? personas[personas.length - 1].id : null)}>
-                <View style={styles.platoInfo}>
-                  <Text style={styles.platoNombre}>{plato.nombre_comida}</Text>
-                  <Text style={styles.platoPrecio}>${plato.precio_comida}</Text>
-                </View>
-              </TouchableOpacity>
-            ))}
-          </View>
-        ))}
-      </View>
-      <View style={styles.bottomContainer}>
-        <TouchableOpacity style={styles.button} onPress={handleBack}>
-          <Text style={styles.buttonText}>Volver a GarzonScreen</Text>
-        </TouchableOpacity>
-        {errorMessage && <Text style={styles.errorMessage}>{errorMessage}</Text>}
-      </View>
-    </ScrollView>
+        <View style={styles.bottomContainer}>
+          <TouchableOpacity style={styles.button} onPress={handleBack}>
+            <Text style={styles.buttonText}>Volver a GarzonScreen</Text>
+          </TouchableOpacity>
+          {errorMessage && <Text style={styles.errorMessage}>{errorMessage}</Text>}
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
-
-  
 };
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  scrollViewContent: {
     flexGrow: 1,
     paddingHorizontal: 20,
     paddingTop: 15,
-    backgroundColor: '#fff',
   },
   title: {
     fontSize: 20,
@@ -193,7 +227,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 20,
+    marginTop: 10,
   },
   bottomContainer: {
     alignItems: 'center',
@@ -231,6 +265,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 10,
+  },
+  detallesContainer: {
+    marginBottom: 20,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    marginBottom: 10,
   },
 });
 
