@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput, KeyboardAvoidingView } from 'react-native';
 import firebase from '../config/firebase';
 import { getDatabase, ref, onValue } from 'firebase/database';
@@ -11,6 +11,8 @@ const MesaScreen = ({ route, navigation }) => {
   const [personas, setPersonas] = useState([]);
   const [expanded, setExpanded] = useState(false); // Estado para controlar la expansión
   const [detallesPedido, setDetallesPedido] = useState(""); // Estado para almacenar los detalles adicionales ingresados por el usuario
+  const [selectedPersona, setSelectedPersona] = useState(null); // Estado para mantener la persona seleccionada
+  const personasScrollViewRef = useRef(null); // Referencia para el ScrollView de personas
 
   useEffect(() => {
     const db = getDatabase(firebase);
@@ -48,39 +50,68 @@ const MesaScreen = ({ route, navigation }) => {
       detalles: [] // Inicializar el array de detalles
     };
     setPersonas([...personas, nuevaPersona]);
+    setSelectedPersona(nuevaPersona.id); // Seleccionar automáticamente la persona recién creada
+    scrollToBottom(); // Llama a la función para hacer scroll al final
+  };
+
+  // Función para hacer scroll al final de la lista de personas
+  const scrollToBottom = () => {
+    if (personasScrollViewRef.current) {
+      personasScrollViewRef.current.scrollToEnd({ animated: true });
+    }
   };
 
   const handleEliminarPersona = (personaId) => {
     const nuevasPersonas = personas.filter(persona => persona.id !== personaId);
     setPersonas(nuevasPersonas);
+    if (selectedPersona === personaId) {
+      setSelectedPersona(null);
+    }
   };
 
-  const handleSeleccionPlato = (plato, personaId) => {
-    const nuevasPersonas = personas.map(persona => {
-      if (persona.id === personaId) {
-        const seleccionadosActualizados = { ...persona.seleccionados };
-        if (seleccionadosActualizados[plato.id]) {
-          seleccionadosActualizados[plato.id]++;
-        } else {
-          seleccionadosActualizados[plato.id] = 1;
+  const handleSeleccionPersona = (personaId) => {
+    setSelectedPersona(personaId);
+  };
+
+  const handleSeleccionPlato = (plato, action) => {
+    if (selectedPersona) {
+      const nuevasPersonas = personas.map(persona => {
+        if (persona.id === selectedPersona) {
+          const seleccionadosActualizados = { ...persona.seleccionados };
+          if (action === 'add') {
+            if (seleccionadosActualizados[plato.id]) {
+              seleccionadosActualizados[plato.id]++;
+            } else {
+              seleccionadosActualizados[plato.id] = 1;
+            }
+          } else if (action === 'remove') {
+            if (seleccionadosActualizados[plato.id] > 0) {
+              seleccionadosActualizados[plato.id]--;
+              if (seleccionadosActualizados[plato.id] === 0) {
+                delete seleccionadosActualizados[plato.id];
+              }
+            }
+          }
+          return {
+            ...persona,
+            seleccionados: seleccionadosActualizados
+          };
         }
-        return {
-          ...persona,
-          seleccionados: seleccionadosActualizados
-        };
-      }
-      return persona;
-    });
-    setPersonas(nuevasPersonas);
+        return persona;
+      });
+      setPersonas(nuevasPersonas);
+    }
   };
 
   const handleGuardarDetalles = () => {
-    // Agregar detalles adicionales al pedido de la última persona
-    const nuevaPersona = personas[personas.length - 1];
-    if (nuevaPersona) {
-      const nuevosDetalles = [...nuevaPersona.detalles, detallesPedido]; // Agregar el nuevo detalle al array de detalles
-      const personaActualizada = { ...nuevaPersona, detalles: nuevosDetalles };
-      const nuevasPersonas = [...personas.slice(0, -1), personaActualizada];
+    // Agregar detalles adicionales al pedido de la persona seleccionada
+    const personaSeleccionada = personas.find(persona => persona.id === selectedPersona);
+    if (personaSeleccionada) {
+      const nuevosDetalles = [...personaSeleccionada.detalles, detallesPedido]; // Agregar el nuevo detalle al array de detalles
+      const personaActualizada = { ...personaSeleccionada, detalles: nuevosDetalles };
+      const nuevasPersonas = personas.map(persona =>
+        persona.id === selectedPersona ? personaActualizada : persona
+      );
       setPersonas(nuevasPersonas);
       setDetallesPedido(""); // Limpiar el input de detalles
     }
@@ -109,11 +140,15 @@ const MesaScreen = ({ route, navigation }) => {
           <Text style={styles.buttonText}>{expanded ? 'Comprimir' : 'Expandir'}</Text>
         </TouchableOpacity>
         <View style={[styles.personasContainer, expanded && { maxHeight: null }]}>
-          <ScrollView horizontal={!expanded} style={{ flexDirection: 'row' }}>
+          <ScrollView
+            horizontal={!expanded}
+            style={{ flexDirection: 'row' }}
+            ref={personasScrollViewRef} // Asigna la referencia al ScrollView de personas
+          >
             {personas.map(persona => (
-              <View key={persona.id} style={styles.personaContainer}>
+              <TouchableOpacity key={persona.id} onPress={() => handleSeleccionPersona(persona.id)} style={[styles.personaContainer, selectedPersona === persona.id && styles.selectedPersona]}>
                 <TouchableOpacity onPress={() => handleEliminarPersona(persona.id)}>
-                  <Text style={{ color: 'red', marginTop: 1, marginBottom: 1, textAlign: 'center' }}>Eliminar</Text>
+                  <Text style={styles.eliminarButton}>ELIMINAR</Text>
                 </TouchableOpacity>
                 <Text style={styles.personaTitle}>{persona.id}</Text>
                 <View style={styles.personaPlatosContainer}>
@@ -124,7 +159,7 @@ const MesaScreen = ({ route, navigation }) => {
                     <Text key={index} style={styles.personaPlato}>Detalle: {detalle}</Text>
                   ))}
                 </View>
-              </View>
+              </TouchableOpacity>
             ))}
           </ScrollView>
         </View>
@@ -134,12 +169,20 @@ const MesaScreen = ({ route, navigation }) => {
             <View key={categoria} style={styles.categoriaContainer}>
               <Text style={styles.categoria}>{categoria}</Text>
               {categoriasPlatos[categoria].map((plato, index) => (
-                <TouchableOpacity key={index} style={styles.platoContainer} onPress={() => handleSeleccionPlato(plato, personas.length ? personas[personas.length - 1].id : null)}>
+                <View key={index} style={styles.platoContainer}>
                   <View style={styles.platoInfo}>
                     <Text style={styles.platoNombre}>{plato.nombre_comida}</Text>
                     <Text style={styles.platoPrecio}>${plato.precio_comida}</Text>
                   </View>
-                </TouchableOpacity>
+                  <View style={styles.platoButtons}>
+                    <TouchableOpacity onPress={() => handleSeleccionPlato(plato, 'remove')} style={[styles.platoButton, styles.platoButtonRemove]}>
+                      <Text style={styles.buttonText}>-</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => handleSeleccionPlato(plato, 'add')} style={[styles.platoButton, styles.platoButtonAdd]}>
+                      <Text style={styles.buttonText}>+</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
               ))}
             </View>
           ))}
@@ -154,7 +197,7 @@ const MesaScreen = ({ route, navigation }) => {
             placeholder="Detalles adicionales..."
           />
           <TouchableOpacity style={styles.button} onPress={handleGuardarDetalles}>
-            <Text style={styles.buttonText}>Agregar</Text>
+            <Text style={styles.buttonText}>Agregar detalle</Text>
           </TouchableOpacity>
         </View>
 
@@ -199,35 +242,57 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   platoContainer: {
-    backgroundColor: '#f9f9f9',
+    backgroundColor: '#e6f3f8',
     padding: 20,
     marginVertical: 10,
     borderRadius: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   platoInfo: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
   },
   platoNombre: {
     fontSize: 16,
     fontWeight: 'bold',
+    marginRight: 10,
   },
   platoPrecio: {
     fontSize: 16,
   },
+  platoButtons: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  platoButton: {
+    width: 50,
+    height: 40,
+    borderRadius: 7 ,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginHorizontal: 10,
+  },
+  platoButtonRemove: {
+    backgroundColor: '#ff9999',
+  },
+  platoButtonAdd: {
+    backgroundColor: '#a2ff99',
+  },
   buttonText: {
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: 'bold',
-    textAlign: 'center',
+    color: 'black',
   },
   button: {
-    backgroundColor: 'lightblue',
     padding: 10,
     borderRadius: 5,
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 10,
+    borderWidth: 1,
+    borderColor: 'purple',
   },
   bottomContainer: {
     alignItems: 'center',
@@ -250,6 +315,9 @@ const styles = StyleSheet.create({
     marginRight: 10, // Agregar espacio entre las personas
     borderRadius: 5,
   },
+  selectedPersona: {
+    backgroundColor: '#e6f3f8',
+  },
   personaTitle: {
     fontSize: 16,
     fontWeight: 'bold',
@@ -259,12 +327,13 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   expandButton: {
-    backgroundColor: 'lightblue',
     padding: 10,
     borderRadius: 5,
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 10,
+    borderWidth: 1,
+    borderColor: 'purple',
   },
   detallesContainer: {
     marginBottom: 20,
@@ -275,6 +344,13 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     paddingHorizontal: 10,
     marginBottom: 10,
+  },
+  eliminarButton: {
+    fontWeight: 'bold',
+    color: 'red',
+    marginTop: 1,
+    marginBottom: 2,
+    textAlign: 'center',
   },
 });
 
