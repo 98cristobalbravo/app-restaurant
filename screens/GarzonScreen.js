@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 
 const GarzonScreen = ({ navigation }) => {
@@ -8,10 +8,11 @@ const GarzonScreen = ({ navigation }) => {
     { id: 'Mesa 3', status: 'libre', personas: [] },
   ]);
   const [pressedMesa, setPressedMesa] = useState(null);
+  const [orders, setOrders] = useState([]);
 
-  const orders = [
-    { table: 'Mesa05', items: ['2nnnn', '1nnnn'] },
-  ];
+  const updateOrders = (newOrder) => {
+    setOrders([...orders, newOrder]);
+  };
 
   const handleAgregarMesa = () => {
     const ultimoNumeroMesa = mesas.reduce((max, mesa) => {
@@ -39,7 +40,7 @@ const GarzonScreen = ({ navigation }) => {
 
   const updateMesas = (updatedMesa) => {
     const updatedMesas = [...mesas];
-    updatedMesas[updatedMesa.mesaIndex] = updatedMesa;z
+    updatedMesas[updatedMesa.mesaIndex] = updatedMesa;
     setMesas(updatedMesas);
   };
 
@@ -63,8 +64,24 @@ const GarzonScreen = ({ navigation }) => {
     setPressedMesa(null);
   };
 
+  useEffect(() => {
+    if (pressedMesa) {
+      showDeleteConfirmation();
+    }
+  }, [pressedMesa]);
+
+  // Función para navegar a CocinaScreen
+  const navigateToCocinaScreen = () => {
+    navigation.navigate('CocinaScreen');
+  };
+
   return (
     <View style={styles.container}>
+      {/* Botón para navegar a CocinaScreen */}
+      <TouchableOpacity style={styles.cocinaButton} onPress={navigateToCocinaScreen}>
+        <Text style={styles.cocinaButtonText}>Ir a Cocina</Text>
+      </TouchableOpacity>
+
       <Text style={styles.title}>Listo para Servir</Text>
       <View style={styles.tablesContainer}>
         <Text style={styles.tablesTitle}>Mesas</Text>
@@ -103,8 +120,6 @@ const GarzonScreen = ({ navigation }) => {
     </View>
   );
 };
-
-
 
 const styles = StyleSheet.create({
   container: {
@@ -178,6 +193,19 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
   },
   entregadoButtonText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  // Estilos para el botón de CocinaScreen
+  cocinaButton: {
+    backgroundColor: 'lightcoral',
+    padding: 10,
+    borderRadius: 5,
+    marginBottom: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  cocinaButtonText: {
     fontSize: 16,
     fontWeight: 'bold',
   },
