@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput, KeyboardAvoidingView } from 'react-native';
 import firebase from '../config/firebase';
-import { getDatabase, ref, onValue } from 'firebase/database';
+import { getDatabase, ref, push, set, onValue, serverTimestamp } from 'firebase/database';
 
 const MesaScreen = ({ route, navigation }) => {
   const { mesaNumero } = route.params;
@@ -9,10 +9,10 @@ const MesaScreen = ({ route, navigation }) => {
   const [categorias, setCategorias] = useState({});
   const [errorMessage, setErrorMessage] = useState(null);
   const [personas, setPersonas] = useState([]);
-  const [expanded, setExpanded] = useState(false); // Estado para controlar la expansión
-  const [detallesPedido, setDetallesPedido] = useState(""); // Estado para almacenar los detalles adicionales ingresados por el usuario
-  const [selectedPersona, setSelectedPersona] = useState(null); // Estado para mantener la persona seleccionada
-  const personasScrollViewRef = useRef(null); // Referencia para el ScrollView de personas
+  const [expanded, setExpanded] = useState(false);
+  const [detallesPedido, setDetallesPedido] = useState("");
+  const [selectedPersona, setSelectedPersona] = useState(null);
+  const personasScrollViewRef = useRef(null);
 
   useEffect(() => {
     const db = getDatabase(firebase);
@@ -45,16 +45,15 @@ const MesaScreen = ({ route, navigation }) => {
 
   const handleAgregarPlato = () => {
     const nuevaPersona = {
-      id: Date.now().toString(), // Generar un nuevo identificador único
+      id: Date.now().toString(),
       seleccionados: {},
-      detalles: [] // Inicializar el array de detalles
+      detalles: []
     };
     setPersonas([...personas, nuevaPersona]);
-    setSelectedPersona(nuevaPersona.id); // Seleccionar automáticamente la persona recién creada
-    scrollToBottom(); // Llama a la función para hacer scroll al final
+    setSelectedPersona(nuevaPersona.id);
+    scrollToBottom();
   };
 
-  // Función para hacer scroll al final de la lista de personas
   const scrollToBottom = () => {
     if (personasScrollViewRef.current) {
       personasScrollViewRef.current.scrollToEnd({ animated: true });
@@ -104,16 +103,28 @@ const MesaScreen = ({ route, navigation }) => {
   };
 
   const handleGuardarDetalles = () => {
-    // Agregar detalles adicionales al pedido de la persona seleccionada
     const personaSeleccionada = personas.find(persona => persona.id === selectedPersona);
     if (personaSeleccionada) {
-      const nuevosDetalles = [...personaSeleccionada.detalles, detallesPedido]; // Agregar el nuevo detalle al array de detalles
+      const nuevosDetalles = [...personaSeleccionada.detalles, detallesPedido];
       const personaActualizada = { ...personaSeleccionada, detalles: nuevosDetalles };
       const nuevasPersonas = personas.map(persona =>
         persona.id === selectedPersona ? personaActualizada : persona
       );
       setPersonas(nuevasPersonas);
-      setDetallesPedido(""); // Limpiar el input de detalles
+      setDetallesPedido("");
+    }
+  };
+
+  const handleEnviarPedido = () => {
+    // Verificar si hay al menos una persona en el pedido antes de guardar en la base de datos
+    if (personas.length > 0) {
+      const db = getDatabase(firebase);
+      const pedidoRef = push(ref(db, `pedidos/${mesaNumero}`));
+      // Obtenemos el timestamp del servidor al momento de escribir los datos
+      const timestamp = serverTimestamp();
+      set(pedidoRef, { personas, timestamp }); // Agregamos el timestamp al objeto a guardar
+    } else {
+      setErrorMessage("Debe agregar al menos una persona al pedido antes de guardarlo en la base de datos.");
     }
   };
 
@@ -135,7 +146,6 @@ const MesaScreen = ({ route, navigation }) => {
         <TouchableOpacity style={styles.button} onPress={handleAgregarPlato}>
           <Text style={styles.buttonText}>Agregar Pedido</Text>
         </TouchableOpacity>
-        {/* Botón para expandir/comprimir */}
         <TouchableOpacity style={styles.expandButton} onPress={() => setExpanded(!expanded)}>
           <Text style={styles.buttonText}>{expanded ? 'Comprimir' : 'Expandir'}</Text>
         </TouchableOpacity>
@@ -143,7 +153,7 @@ const MesaScreen = ({ route, navigation }) => {
           <ScrollView
             horizontal={!expanded}
             style={{ flexDirection: 'row' }}
-            ref={personasScrollViewRef} // Asigna la referencia al ScrollView de personas
+            ref={personasScrollViewRef}
           >
             {personas.map(persona => (
               <TouchableOpacity key={persona.id} onPress={() => handleSeleccionPersona(persona.id)} style={[styles.personaContainer, selectedPersona === persona.id && styles.selectedPersona]}>
@@ -163,7 +173,6 @@ const MesaScreen = ({ route, navigation }) => {
             ))}
           </ScrollView>
         </View>
-
         <View style={styles.menuContainer}>
           {categoriasOrdenadas.map((categoria) => (
             <View key={categoria} style={styles.categoriaContainer}>
@@ -187,8 +196,6 @@ const MesaScreen = ({ route, navigation }) => {
             </View>
           ))}
         </View>
-        
-        {/* Input para detalles adicionales */}
         <View style={styles.detallesContainer}>
           <TextInput
             style={styles.input}
@@ -200,7 +207,9 @@ const MesaScreen = ({ route, navigation }) => {
             <Text style={styles.buttonText}>Agregar detalle</Text>
           </TouchableOpacity>
         </View>
-
+        <TouchableOpacity style={styles.button} onPress={handleEnviarPedido}>
+          <Text style={styles.buttonText}>Guardar en Base de Datos</Text>
+        </TouchableOpacity>
         <View style={styles.bottomContainer}>
           <TouchableOpacity style={styles.button} onPress={handleBack}>
             <Text style={styles.buttonText}>Volver a GarzonScreen</Text>
@@ -211,6 +220,7 @@ const MesaScreen = ({ route, navigation }) => {
     </KeyboardAvoidingView>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {
@@ -306,13 +316,13 @@ const styles = StyleSheet.create({
   personasContainer: {
     maxHeight: 125,
     marginBottom: 20,
-    overflow: 'hidden', // Asegura que el contenido oculto no sea visible
+    overflow: 'hidden',
   },
   personaContainer: {
     backgroundColor: '#f0f0f0',
     padding: 10,
     marginTop: 20,
-    marginRight: 10, // Agregar espacio entre las personas
+    marginRight: 10,
     borderRadius: 5,
   },
   selectedPersona: {
