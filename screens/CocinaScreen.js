@@ -48,60 +48,49 @@ const CocinaScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Pedidos</Text>
-      <ScrollView style={styles.scrollView}>
-        {Object.keys(pedidos).map((pedidoId) => {
-          const platosEnCocina = Object.values(pedidos[pedidoId]).some((pedido) => {
-            return pedido.personas.some((persona) => {
-              return Object.keys(persona.seleccionados).some((platoId) => {
-                return menu[platoId]?.seccion === 'Cocina';
-              });
-            });
-          });
-
-          if (platosEnCocina) {
-            return (
-              <View key={pedidoId} style={styles.tarjetaContainer}>
-                <View style={styles.tarjeta}>
-                  <Text style={styles.encabezado}>Pedido #{pedidoId}</Text>
-                  {Object.values(pedidos[pedidoId]).map((pedido) => (
-                    <View key={pedido.timestamp}>
-                      {pedido.personas.map((persona, index) => (
-                        <View key={index}>
-                          <Text>Número de mesa: {pedido.nummesa}</Text>
-                          {persona.detalles && persona.detalles.length > 0 && (
-                            <Text>Detalles: {persona.detalles.join(', ')}</Text>
-                          )}
-                          {Object.keys(persona.seleccionados).map((platoId) => {
-                            if (menu[platoId]?.seccion === 'Cocina') {
-                              return (
-                                <View key={platoId}>
-                                  <Text style={styles.platoNombre}>{getPlatoNombre(platoId)}</Text>
-                                  <Text>Categoría: {categorias[menu[platoId]?.categoria_id]?.nombre_categoria}</Text>
-                                  <Text>Sección: {menu[platoId]?.seccion}</Text>
-                                  <Text>Cantidad: {persona.seleccionados[platoId]}</Text>
-                                  <Text>-------------------------------------</Text>
-                                </View>
-                              );
-                            } else {
-                              return null;
-                            }
-                          })}
+    <ScrollView style={styles.container}>
+      <Text style={styles.title}>Pedidos de Cocina</Text>
+      {Object.entries(pedidos)
+        .map(([mesaNumero, pedidosMesa]) =>
+          Object.entries(pedidosMesa).map(([pedidoId, pedido]) => ({
+            pedidoId,
+            mesaNumero,
+            ...pedido,
+          }))
+        )
+        .flat()
+        .sort((pedidoA, pedidoB) => pedidoA.timestamp - pedidoB.timestamp)
+        .map((pedido) => (
+          <View key={pedido.pedidoId} style={styles.tarjetaContainer}>
+            <View style={styles.tarjeta}>
+              <Text style={{fontSize: 20, fontWeight: 'bold'}}>Número de mesa: {pedido.mesaNumero}</Text>
+              {Object.entries(pedido.personas).map(([personaId, persona]) => (
+                <View key={personaId}>
+                  {persona.detalles && persona.detalles.length > 0 && (
+                    <Text>Detalles: {persona.detalles.join(', ')}</Text>
+                  )}
+                  {Object.entries(persona.seleccionados).map(([platoId, cantidad]) => {
+                    const plato = menu[platoId];
+                    if (plato && plato.seccion === 'Cocina') {
+                      return (
+                        <View key={platoId}>
+                          <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Cantidad: {cantidad}</Text>
+                          <Text style={{ ...styles.platoNombre, fontSize: 20, fontWeight: 'bold'  }}>Pedido: {plato.nombre_comida}</Text>
+                          <Text style={{ fontSize: 20 }}>Categoría: {categorias[plato.categoria_id]?.nombre_categoria}</Text>
+                          <Text style={styles.encabezado}>Pedido ID: {pedido.pedidoId}</Text>
                         </View>
-                      ))}
-                    </View>
-                  ))}
+                      );
+                    } else {
+                      return null;
+                    }
+                  })}
                 </View>
-              </View>
-            );
-          } else {
-            return null;
-          }
-        })}
-      </ScrollView>
+              ))}
+            </View>
+          </View>
+        ))}
       {errorMessage && <Text style={styles.errorMessage}>{errorMessage}</Text>}
-    </View>
+    </ScrollView>
   );
 };
 
@@ -117,9 +106,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 20,
     textAlign: 'center',
-  },
-  scrollView: {
-    flex: 1,
   },
   tarjetaContainer: {
     marginBottom: 20,
@@ -142,10 +128,10 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   encabezado: {
-    fontSize: 18,
+    fontSize: 15,
     fontWeight: 'bold',
-    marginBottom: 10,
     textAlign: 'center',
+    marginTop: 10,
   },
   platoNombre: {
     fontSize: 16,
