@@ -81,53 +81,71 @@ const Registro = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    paddingHorizontal: 20, // Added padding for better spacing
+    backgroundColor: 'white', // Light gray background
   },
   title: {
-    fontSize: 20,
+    fontSize: 30, // Increased title font size
+    fontWeight: 'bold',
     marginBottom: 20,
+    textAlign: 'center',
+    color: '#333', // Darker gray text for better contrast
   },
   input: {
-    width: '80%',
-    padding: 10,
-    marginBottom: 10,
+    width: '100%', // Use full width for inputs
+    padding: 15,
+    marginBottom: 15,
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 5,
+    backgroundColor: '#fff', // White input background
   },
   button: {
-    width: '80%',
-    backgroundColor: 'blue',
-    padding: 10,
+    width: '100%', // Use full width for button
+    backgroundColor: '#28a745', // Green button color
+    padding: 15,
     borderRadius: 5,
     alignItems: 'center',
     marginTop: 10,
+    shadowColor: '#ccc', // Light gray shadow
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
   },
   buttonText: {
-    color: '#fff',
+    color: '#fff', // White text on button
     fontWeight: 'bold',
+    fontSize: 17,
   },
   picker: {
-    width: '80%',
-    marginBottom: 10,
+    width: '100%', // Use full width for picker
+    padding: 15,
+    marginBottom: 15,
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 5,
+    backgroundColor: '#fff', // White picker background
   },
   loginButton: {
-    marginTop: 20,
+    marginTop: 20, // Increased margin for login button
   },
   loginButtonText: {
-    color: 'blue',
+    color: '#28a745', // Green color for login button text
+    fontWeight: 'bold',
   },
   errorMessage: {
     color: 'red',
     marginTop: 10,
+    textAlign: 'center',
   },
   successMessage: {
     color: 'green',
     marginTop: 10,
+    textAlign: 'center',
   },
 });
 

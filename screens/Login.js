@@ -39,12 +39,13 @@ const Login = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Inicio de Sesión</Text>
+      <Text style={styles.title}>Pecados café</Text>
       <TextInput
         style={styles.input}
         placeholder="Correo electrónico"
         onChangeText={setEmail}
         value={email}
+        placeholderTextColor="#999" // Lighter text for placeholder
       />
       <TextInput
         style={styles.input}
@@ -52,6 +53,7 @@ const Login = ({ navigation }) => {
         onChangeText={setPassword}
         value={password}
         secureTextEntry
+        placeholderTextColor="#999" // Lighter text for placeholder
       />
       <TouchableOpacity onPress={handleLogin} style={styles.button}>
         <Text style={styles.buttonText}>Iniciar Sesión</Text>
@@ -66,33 +68,41 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#f2f2f2', // Light gray background
   },
   title: {
     fontSize: 20,
     marginBottom: 20,
+    color: '#333', // Darker gray text for better contrast
   },
   input: {
     width: '80%',
-    padding: 10,
+    padding: 15,
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: '#ddd', // Very light gray border
     borderRadius: 5,
+    backgroundColor: '#fff', // White input background
   },
   button: {
     width: '80%',
-    backgroundColor: 'blue',
-    padding: 10,
+    backgroundColor: '#28a745', // Green button
+    padding: 15,
     borderRadius: 5,
     alignItems: 'center',
     marginTop: 10,
+    shadowColor: '#ccc', // Light gray shadow
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
   },
   buttonText: {
-    color: '#fff',
+    color: '#fff', // White text on button
     fontWeight: 'bold',
   },
   errorMessage: {
-    color: 'red',
+    color: '#dc3545', // Red error message
     marginTop: 10,
   },
 });

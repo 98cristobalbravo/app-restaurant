@@ -12,6 +12,8 @@ const MesaScreen = ({ route, navigation }) => {
   const [expanded, setExpanded] = useState(false);
   const [detallesPedido, setDetallesPedido] = useState("");
   const [selectedPersona, setSelectedPersona] = useState(null);
+  const [nummesa, setNumMesa] = useState("");
+  const [timestamp, setTimestamp] = useState(Date.now()); // Estado para almacenar el timestamp
   const personasScrollViewRef = useRef(null);
 
   useEffect(() => {
@@ -122,7 +124,9 @@ const MesaScreen = ({ route, navigation }) => {
       const pedidoRef = push(ref(db, `pedidos/${mesaNumero}`));
       // Obtenemos el timestamp del servidor al momento de escribir los datos
       const timestamp = serverTimestamp();
-      set(pedidoRef, { personas, timestamp }); // Agregamos el timestamp al objeto a guardar
+      // Utiliza nummesa si tiene un valor, de lo contrario, utiliza mesaNumero
+      const numMesaEnviar = nummesa || mesaNumero;
+      set(pedidoRef, { personas, timestamp, nummesa: numMesaEnviar }); // Agregamos el timestamp al objeto a guardar
     } else {
       setErrorMessage("Debe agregar al menos una persona al pedido antes de guardarlo en la base de datos.");
     }
@@ -203,6 +207,20 @@ const MesaScreen = ({ route, navigation }) => {
             onChangeText={setDetallesPedido}
             placeholder="Detalles adicionales..."
           />
+          <TextInput
+            style={[styles.input, { display: "none" }]}
+            value={nummesa || mesaNumero}
+            onChangeText={setNumMesa}
+            placeholder="Número de mesa"
+            editable={false}
+          />
+          <TextInput
+            style={[styles.input, { display: "none" }]}
+            value={timestamp.toString()} // Mostrar el timestamp en el campo oculto
+            onChangeText={() => {}} // Evitar que el campo se pueda editar
+            placeholder="Timestamp"
+            editable={false} // Evitar que el campo sea editable
+          />
           <TouchableOpacity style={styles.button} onPress={handleGuardarDetalles}>
             <Text style={styles.buttonText}>Agregar detalle</Text>
           </TouchableOpacity>
@@ -210,6 +228,7 @@ const MesaScreen = ({ route, navigation }) => {
         <TouchableOpacity style={styles.button} onPress={handleEnviarPedido}>
           <Text style={styles.buttonText}>Guardar en Base de Datos</Text>
         </TouchableOpacity>
+
         <View style={styles.bottomContainer}>
           <TouchableOpacity style={styles.button} onPress={handleBack}>
             <Text style={styles.buttonText}>Volver a GarzonScreen</Text>
@@ -220,7 +239,6 @@ const MesaScreen = ({ route, navigation }) => {
     </KeyboardAvoidingView>
   );
 };
-
 
 const styles = StyleSheet.create({
   container: {
@@ -237,6 +255,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 20,
     textAlign: 'center',
+    color: '#333',
   },
   menuContainer: {
     marginBottom: 20,
@@ -250,15 +269,24 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 5,
     textAlign: 'center',
+    color: '#333',
   },
   platoContainer: {
-    backgroundColor: '#e6f3f8',
+    backgroundColor: '#fff',
     padding: 20,
     marginVertical: 10,
     borderRadius: 10,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    shadowColor: 'purple',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   platoInfo: {
     flexDirection: 'row',
@@ -268,9 +296,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     marginRight: 10,
+    color: '#333',
   },
   platoPrecio: {
     fontSize: 16,
+    color: '#666',
   },
   platoButtons: {
     flexDirection: 'row',
@@ -285,15 +315,15 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
   },
   platoButtonRemove: {
-    backgroundColor: '#ff9999',
+    backgroundColor: '#ffcccc',
   },
   platoButtonAdd: {
-    backgroundColor: '#a2ff99',
+    backgroundColor: '#ccffcc',
   },
   buttonText: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: 'black',
+    color: '#333',
   },
   button: {
     padding: 10,
@@ -319,11 +349,19 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   personaContainer: {
-    backgroundColor: '#f0f0f0',
+    backgroundColor: '#fff',
     padding: 10,
     marginTop: 20,
     marginRight: 10,
     borderRadius: 5,
+    shadowColor: 'purple',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   selectedPersona: {
     backgroundColor: '#e6f3f8',
@@ -332,9 +370,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 5,
+    color: '#333',
   },
   personaPlato: {
     fontSize: 14,
+    color: '#666',
   },
   expandButton: {
     padding: 10,
@@ -354,6 +394,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     paddingHorizontal: 10,
     marginBottom: 10,
+    color: '#333',
   },
   eliminarButton: {
     fontWeight: 'bold',
