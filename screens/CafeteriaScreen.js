@@ -3,7 +3,7 @@ import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { getDatabase, ref, onValue } from 'firebase/database';
 import firebase from '../config/firebase';
 
-const CocinaScreen = () => {
+const CafeteriaScreen = () => {
   const [pedidos, setPedidos] = useState({});
   const [categorias, setCategorias] = useState({});
   const [menu, setMenu] = useState({});
@@ -48,60 +48,50 @@ const CocinaScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Pedidos</Text>
-      <ScrollView style={styles.scrollView}>
-        {Object.keys(pedidos).map((pedidoId) => {
-          const platosEnCocina = Object.values(pedidos[pedidoId]).some((pedido) => {
-            return pedido.personas.some((persona) => {
-              return Object.keys(persona.seleccionados).some((platoId) => {
-                return menu[platoId]?.seccion === 'Cocina';
-              });
-            });
-          });
-
-          if (platosEnCocina) {
-            return (
-              <View key={pedidoId} style={styles.tarjetaContainer}>
-                <View style={styles.tarjeta}>
-                  <Text style={styles.encabezado}>Pedido #{pedidoId}</Text>
-                  {Object.values(pedidos[pedidoId]).map((pedido) => (
-                    <View key={pedido.timestamp}>
-                      {pedido.personas.map((persona, index) => (
-                        <View key={index}>
-                          <Text>Número de mesa: {pedido.nummesa}</Text>
-                          {persona.detalles && persona.detalles.length > 0 && (
-                            <Text>Detalles: {persona.detalles.join(', ')}</Text>
-                          )}
-                          {Object.keys(persona.seleccionados).map((platoId) => {
-                            if (menu[platoId]?.seccion === 'Cocina') {
-                              return (
-                                <View key={platoId}>
-                                  <Text style={styles.platoNombre}>{getPlatoNombre(platoId)}</Text>
-                                  <Text>Categoría: {categorias[menu[platoId]?.categoria_id]?.nombre_categoria}</Text>
-                                  <Text>Sección: {menu[platoId]?.seccion}</Text>
-                                  <Text>Cantidad: {persona.seleccionados[platoId]}</Text>
-                                  <Text>-------------------------------------</Text>
-                                </View>
-                              );
-                            } else {
-                              return null;
-                            }
-                          })}
+    <ScrollView style={styles.container}>
+      <Text style={styles.title}>Pedidos de Cafetería</Text>
+      {Object.entries(pedidos)
+        .map(([mesaNumero, pedidosMesa]) =>
+          Object.entries(pedidosMesa).map(([pedidoId, pedido]) => ({
+            mesaNumero,
+            pedidoId,
+            ...pedido,
+          }))
+        )
+        .flat()
+        .sort((pedidoA, pedidoB) => pedidoA.timestamp - pedidoB.timestamp)
+        .map((pedido) => (
+          <View key={pedido.pedidoId} style={styles.tarjetaContainer}>
+            <View style={styles.tarjeta}>
+              <Text>Pedido ID: {pedido.pedidoId}</Text>
+              <Text>Número de mesa: {pedido.mesaNumero}</Text>
+              {pedido.personas.map((persona, index) => (
+                <View key={index}>
+                  {persona.detalles && persona.detalles.length > 0 && (
+                    <Text>Detalles: {persona.detalles.join(', ')}</Text>
+                  )}
+                  {Object.keys(persona.seleccionados).map((platoId) => {
+                    const plato = menu[platoId];
+                    if (plato && plato.seccion === 'Cafetería') {
+                      return (
+                        <View key={platoId}>
+                          <Text style={styles.platoNombre}>{plato.nombre_comida}</Text>
+                          <Text>Categoría: {categorias[plato.categoria_id]?.nombre_categoria}</Text>
+                          <Text>Cantidad: {persona.seleccionados[platoId]}</Text>
+                          <Text>-------------------------------------</Text>
                         </View>
-                      ))}
-                    </View>
-                  ))}
+                      );
+                    } else {
+                      return null;
+                    }
+                  })}
                 </View>
-              </View>
-            );
-          } else {
-            return null;
-          }
-        })}
-      </ScrollView>
+              ))}
+            </View>
+          </View>
+        ))}
       {errorMessage && <Text style={styles.errorMessage}>{errorMessage}</Text>}
-    </View>
+    </ScrollView>
   );
 };
 
@@ -117,9 +107,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 20,
     textAlign: 'center',
-  },
-  scrollView: {
-    flex: 1,
   },
   tarjetaContainer: {
     marginBottom: 20,
@@ -159,4 +146,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CocinaScreen;
+export default CafeteriaScreen;

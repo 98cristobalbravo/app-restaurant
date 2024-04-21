@@ -1,3 +1,4 @@
+// En GarzonScreen.js
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 
@@ -35,13 +36,8 @@ const GarzonScreen = ({ navigation }) => {
 
   const handleMesaPress = (mesaId) => {
     const mesaIndex = parseInt(mesaId.split(' ')[1]) - 1;
-    navigation.navigate('MesaScreen', { mesaNumero: mesaId.split(' ')[1], mesaIndex, mesa: mesas[mesaIndex], updateMesas });
-  };
-
-  const updateMesas = (updatedMesa) => {
-    const updatedMesas = [...mesas];
-    updatedMesas[updatedMesa.mesaIndex] = updatedMesa;
-    setMesas(updatedMesas);
+    const updatedMesa = { mesaIndex, mesa: mesas[mesaIndex] };
+    navigation.navigate('MesaScreen', { mesaNumero: mesaId.split(' ')[1], updatedMesa });
   };
 
   const showDeleteConfirmation = () => {
@@ -70,16 +66,22 @@ const GarzonScreen = ({ navigation }) => {
     }
   }, [pressedMesa]);
 
-  // Función para navegar a CocinaScreen
   const navigateToCocinaScreen = () => {
     navigation.navigate('CocinaScreen');
   };
 
+  const navigateToCafeteriaScreen = () => {
+    navigation.navigate('CafeteriaScreen');
+  };
+
   return (
     <View style={styles.container}>
-      {/* Botón para navegar a CocinaScreen */}
       <TouchableOpacity style={styles.cocinaButton} onPress={navigateToCocinaScreen}>
         <Text style={styles.cocinaButtonText}>Ir a Cocina</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.cocinaButton} onPress={navigateToCafeteriaScreen}>
+        <Text style={styles.cocinaButtonText}>Ir a Cafetería</Text>
       </TouchableOpacity>
 
       <Text style={styles.title}>Listo para Servir</Text>
@@ -125,11 +127,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+    backgroundColor: '#f5f5f5', // Light gray background
   },
   title: {
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 10,
+    color: '#263238', // Dark blue text
   },
   tablesContainer: {
     marginBottom: 20,
@@ -138,76 +142,125 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 5,
+    color: '#263238', // Dark blue text
   },
   table: {
-    backgroundColor: 'lightgreen',
+    backgroundColor: '#fff',
     padding: 10,
     marginRight: 10,
     borderRadius: 5,
+    shadowColor: '#ccc', // Light gray shadow
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   tableText: {
     fontSize: 16,
     fontWeight: 'bold',
+    color: '#263238', // Dark blue text
   },
   addButton: {
-    backgroundColor: 'lightblue',
+    backgroundColor: '#007bff', // Blue button
     padding: 10,
     borderRadius: 5,
     justifyContent: 'center',
     alignItems: 'center',
+    shadowColor: '#ccc', // Light gray shadow
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   addButtonLabel: {
     fontSize: 16,
     fontWeight: 'bold',
+    color: '#fff', // White text on button
   },
   libre: {
-    backgroundColor: 'lightgreen',
+    backgroundColor: '#d4edda', // Light green
   },
   ocupada: {
-    backgroundColor: 'lightblue',
+    backgroundColor: '#f8d7da', // Light red
   },
   ordersTitle: {
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 10,
+    color: '#263238', // Dark blue text
   },
   orderContainer: {
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: '#ccc', // Light gray border
     padding: 10,
     marginBottom: 10,
     borderRadius: 5,
+    backgroundColor: '#fff',
+    shadowColor: '#ccc', // Light gray shadow
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   orderText: {
     fontSize: 16,
+    color: '#263238', // Dark blue text
   },
   orderItem: {
     marginLeft: 20,
     fontSize: 14,
+    color: '#666', // Gray text
   },
   entregadoButton: {
-    backgroundColor: 'lightblue',
+    backgroundColor: '#28a745', // Green button
     padding: 10,
     borderRadius: 5,
     marginTop: 10,
     alignSelf: 'flex-start',
+    shadowColor: '#ccc', // Light gray shadow
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   entregadoButtonText: {
     fontSize: 16,
     fontWeight: 'bold',
+    color: '#fff', // White text on button
   },
-  // Estilos para el botón de CocinaScreen
   cocinaButton: {
-    backgroundColor: 'lightcoral',
+    backgroundColor: '#ffc107', // Yellow button
     padding: 10,
     borderRadius: 5,
     marginBottom: 10,
     justifyContent: 'center',
     alignItems: 'center',
+    shadowColor: '#ccc', // Light gray shadow
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   cocinaButtonText: {
     fontSize: 16,
+
     fontWeight: 'bold',
+    color: '#333',
   },
 });
 

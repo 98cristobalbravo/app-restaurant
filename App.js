@@ -8,7 +8,8 @@ import GarzonScreen from './screens/GarzonScreen'
 import MesaScreen from './screens/MesaScreen'
 import CrearMenuScreen from './screens/CrearMenuScreen'
 import VerMenuScreen from './screens/VerMenuScreen'
-import CocinaScreen from './screens/CocinaScreen'; // Importa CocinaScreen
+import CocinaScreen from './screens/CocinaScreen';
+import CafeteriaScreen from './screens/CafeteriaScreen'
 
 import firebase from './config/firebase';
 
@@ -26,6 +27,7 @@ export default function App() {
         <Stack.Screen name="CrearMenuScreen" component={CrearMenuScreen} options={{ title: ''}} /> 
         <Stack.Screen name="VerMenuScreen" component={VerMenuScreen} options={{ title: 'VerMenuScreen'}} /> 
         <Stack.Screen name="CocinaScreen" component={CocinaScreen} options={{ title: 'Cocina'}} />
+        <Stack.Screen name="CafeteriaScreen" component={CafeteriaScreen} options={{ title: 'CafeteriaScreen'}} />
       </Stack.Navigator>
     </NavigationContainer>
   );
