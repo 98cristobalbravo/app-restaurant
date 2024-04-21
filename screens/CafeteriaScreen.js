@@ -63,8 +63,7 @@ const CafeteriaScreen = () => {
         .map((pedido) => (
           <View key={pedido.pedidoId} style={styles.tarjetaContainer}>
             <View style={styles.tarjeta}>
-              <Text>Pedido ID: {pedido.pedidoId}</Text>
-              <Text>Número de mesa: {pedido.mesaNumero}</Text>
+              <Text style={{fontSize: 20, fontWeight: 'bold'}}>Número de mesa: {pedido.mesaNumero}</Text>
               {pedido.personas.map((persona, index) => (
                 <View key={index}>
                   {persona.detalles && persona.detalles.length > 0 && (
@@ -75,10 +74,10 @@ const CafeteriaScreen = () => {
                     if (plato && plato.seccion === 'Cafetería') {
                       return (
                         <View key={platoId}>
-                          <Text style={styles.platoNombre}>{plato.nombre_comida}</Text>
+                          <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Cantidad: {persona.seleccionados[platoId]}</Text>
+                          <Text style={{ ...styles.platoNombre, fontSize: 20, fontWeight: 'bold'  }}>Pedido: {plato.nombre_comida}</Text>
                           <Text>Categoría: {categorias[plato.categoria_id]?.nombre_categoria}</Text>
-                          <Text>Cantidad: {persona.seleccionados[platoId]}</Text>
-                          <Text>-------------------------------------</Text>
+                          <Text style={styles.encabezado}>Pedido ID: {pedido.pedidoId}</Text>
                         </View>
                       );
                     } else {
@@ -129,10 +128,8 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   encabezado: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    textAlign: 'center',
+    fontSize: 15,
+    marginTop: 10,
   },
   platoNombre: {
     fontSize: 16,
