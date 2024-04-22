@@ -123,7 +123,7 @@ const CrearMenuScreen = () => {
         ))}
       </Picker>
       <TouchableOpacity onPress={handleGuardarMenu} style={styles.button}>
-        <Text style={styles.buttonText}>Guardar Menú</Text>
+        <Text style={styles.buttonText}>Agregar plato al menú</Text>
       </TouchableOpacity>
       {errorMessage && <Text style={styles.errorMessage}>{errorMessage}</Text>}
       {successMessage && <Text style={styles.successMessage}>{successMessage}</Text>}
@@ -136,42 +136,42 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 20,
     paddingTop: 15,
-    backgroundColor: 'white', // Light gray background
+    backgroundColor: 'white',
     alignItems: 'center',
   },
   title: {
-    fontSize: 30, // Increased title font size
+    fontSize: 30,
     fontWeight: 'bold',
     marginBottom: 20,
     textAlign: 'center',
-    color: '#333', // Darker gray text for better contrast
+    color: '#333', 
   },
   input: {
-    width: '100%', // Use full width for inputs
+    width: '100%', 
     padding: 15,
     marginBottom: 15,
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 5,
-    backgroundColor: '#fff', // White input background
+    backgroundColor: '#fff', 
   },
   picker: {
-    width: '100%', // Use full width for picker
+    width: '100%', 
     height: 50,
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 5,
     marginBottom: 10,
-    backgroundColor: '#fff', // White picker background
+    backgroundColor: '#fff', 
   },
   button: {
-    width: '100%', // Use full width for button
-    backgroundColor: '#28a745', // Green button color
+    width: '100%', 
+    backgroundColor: '#28a745', 
     padding: 15,
     borderRadius: 5,
     alignItems: 'center',
     marginTop: 10,
-    shadowColor: '#ccc', // Light gray shadow
+    shadowColor: '#ccc', 
     shadowOffset: {
       width: 0,
       height: 2
@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   buttonText: {
-    color: '#fff', // White text on button
+    color: '#fff', 
     fontWeight: 'bold',
     fontSize: 17,
   },

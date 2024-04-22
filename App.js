@@ -27,10 +27,10 @@ export default function App() {
         <Stack.Screen name="GarzonScreen" component={GarzonScreen} options={{ title: 'Pantalla de Garzón'}} />
         <Stack.Screen name="MesaScreen" component={MesaScreen} options={{ title: 'Pantalla Mesa'}} /> 
         <Stack.Screen name="CrearMenuScreen" component={CrearMenuScreen} options={{ title: ''}} /> 
-        <Stack.Screen name="VerMenuScreen" component={VerMenuScreen} options={{ title: 'VerMenuScreen'}} />
-        <Stack.Screen name="CocineroScreen" component={CocineroScreen} options={{ title: 'CocineroScreen'}} />
-        <Stack.Screen name="CocinaScreen" component={CocinaScreen} options={{ title: 'Cocina'}} />
-        <Stack.Screen name="CafeteriaScreen" component={CafeteriaScreen} options={{ title: 'CafeteriaScreen'}} />
+        <Stack.Screen name="VerMenuScreen" component={VerMenuScreen} options={{ title: 'Menú'}} />
+        <Stack.Screen name="CocineroScreen" component={CocineroScreen} options={{ title: 'Cocinero'}} />
+        <Stack.Screen name="CocinaScreen" component={CocinaScreen} options={{ title: 'Pedidos de Cocina'}} />
+        <Stack.Screen name="CafeteriaScreen" component={CafeteriaScreen} options={{ title: 'Pedidos de Cafeteria'}} />
       </Stack.Navigator>
     </NavigationContainer>
   );

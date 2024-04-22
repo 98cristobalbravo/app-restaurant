@@ -67,10 +67,7 @@ const Registro = ({ navigation }) => {
       </RNPicker>
 
       <TouchableOpacity onPress={handleSignUp} style={styles.button}>
-        <Text style={styles.buttonText}>Registrarse</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={navigateToLogin} style={styles.loginButton}>
-        <Text style={styles.loginButtonText}>¿Ya tienes una cuenta? Inicia sesión aquí</Text>
+        <Text style={styles.buttonText}>Registrar</Text>
       </TouchableOpacity>
       {errorMessage && <Text style={styles.errorMessage}>{errorMessage}</Text>}
       {successMessage && <Text style={styles.successMessage}>{successMessage}</Text>}
@@ -81,33 +78,33 @@ const Registro = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 20, // Added padding for better spacing
-    backgroundColor: 'white', // Light gray background
+    paddingHorizontal: 20, 
+    backgroundColor: 'white', 
   },
   title: {
-    fontSize: 30, // Increased title font size
+    fontSize: 30, 
     fontWeight: 'bold',
     marginBottom: 20,
     textAlign: 'center',
-    color: '#333', // Darker gray text for better contrast
+    color: '#333',  
   },
   input: {
-    width: '100%', // Use full width for inputs
+    width: '100%', 
     padding: 15,
     marginBottom: 15,
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 5,
-    backgroundColor: '#fff', // White input background
+    backgroundColor: '#fff', 
   },
   button: {
-    width: '100%', // Use full width for button
-    backgroundColor: '#28a745', // Green button color
+    width: '100%',  
+    backgroundColor: '#28a745', 
     padding: 15,
     borderRadius: 5,
     alignItems: 'center',
     marginTop: 10,
-    shadowColor: '#ccc', // Light gray shadow
+    shadowColor: '#ccc', 
     shadowOffset: {
       width: 0,
       height: 2
@@ -117,24 +114,24 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   buttonText: {
-    color: '#fff', // White text on button
+    color: '#fff',  
     fontWeight: 'bold',
     fontSize: 17,
   },
   picker: {
-    width: '100%', // Use full width for picker
+    width: '100%', 
     padding: 15,
     marginBottom: 15,
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 5,
-    backgroundColor: '#fff', // White picker background
+    backgroundColor: '#fff', 
   },
   loginButton: {
-    marginTop: 20, // Increased margin for login button
+    marginTop: 20, 
   },
   loginButtonText: {
-    color: '#28a745', // Green color for login button text
+    color: '#28a745', 
     fontWeight: 'bold',
   },
   errorMessage: {
