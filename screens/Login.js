@@ -14,7 +14,7 @@ const Login = ({ navigation }) => {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      // Obtener el cargo del usuario desde Firebase Authentication
+      // Obtener el cargo del usuario desde Firebase
       const userCargo = user.displayName;
 
       // Redirigir a la pantalla correspondiente según el cargo del usuario
@@ -45,7 +45,7 @@ const Login = ({ navigation }) => {
         placeholder="Correo electrónico"
         onChangeText={setEmail}
         value={email}
-        placeholderTextColor="#999" // Lighter text for placeholder
+        placeholderTextColor="#999"
       />
       <TextInput
         style={styles.input}
@@ -53,7 +53,7 @@ const Login = ({ navigation }) => {
         onChangeText={setPassword}
         value={password}
         secureTextEntry
-        placeholderTextColor="#999" // Lighter text for placeholder
+        placeholderTextColor="#999"
       />
       <TouchableOpacity onPress={handleLogin} style={styles.button}>
         <Text style={styles.buttonText}>Iniciar Sesión</Text>
@@ -68,41 +68,41 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f2f2f2', // Light gray background
+    backgroundColor: 'white',
   },
   title: {
     fontSize: 20,
     marginBottom: 20,
-    color: '#333', // Darker gray text for better contrast
+    color: '#333',
   },
   input: {
     width: '80%',
     padding: 15,
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: '#ddd', // Very light gray border
+    borderColor: '#ddd',
     borderRadius: 5,
-    backgroundColor: '#fff', // White input background
+    backgroundColor: '#fff', 
   },
   button: {
     width: '80%',
-    backgroundColor: '#28a745', // Green button
+    backgroundColor: '#28a745', 
     padding: 15,
     borderRadius: 5,
     alignItems: 'center',
     marginTop: 10,
-    shadowColor: '#ccc', // Light gray shadow
+    shadowColor: '#ccc', 
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
   },
   buttonText: {
-    color: '#fff', // White text on button
+    color: '#fff', 
     fontWeight: 'bold',
   },
   errorMessage: {
-    color: '#dc3545', // Red error message
+    color: '#dc3545', 
     marginTop: 10,
   },
 });

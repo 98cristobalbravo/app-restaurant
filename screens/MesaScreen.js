@@ -226,12 +226,12 @@ const MesaScreen = ({ route, navigation }) => {
           </TouchableOpacity>
         </View>
         <TouchableOpacity style={styles.button} onPress={handleEnviarPedido}>
-          <Text style={styles.buttonText}>Guardar en Base de Datos</Text>
+          <Text style={styles.buttonText}>Enviar Pedido</Text>
         </TouchableOpacity>
 
         <View style={styles.bottomContainer}>
           <TouchableOpacity style={styles.button} onPress={handleBack}>
-            <Text style={styles.buttonText}>Volver a GarzonScreen</Text>
+            <Text style={styles.buttonText}>Volver a pantalla de Garzón</Text>
           </TouchableOpacity>
           {errorMessage && <Text style={styles.errorMessage}>{errorMessage}</Text>}
         </View>
@@ -264,7 +264,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   categoria: {
-    fontSize: 16,
+    fontSize: 25,
     fontWeight: 'bold',
     marginTop: 10,
     marginBottom: 5,

@@ -195,10 +195,10 @@ const AdminScreen = ({ navigation }) => {
     <View style={styles.container}>
       <Text style={styles.title}>Funciones</Text>
       <TouchableOpacity onPress={handleGoToRegister} style={styles.button}>
-        <Text style={styles.buttonText}>Registrar nuevo usuario</Text>
+        <Text style={styles.buttonText}>Registrar nuevo trabajador</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={handleGoToCrearMenu} style={styles.button}>
-        <Text style={styles.buttonText}>Agregar Menú</Text>
+        <Text style={styles.buttonText}>Agregar Plato/Menú</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={handleGoToVerMenu} style={styles.button}>
         <Text style={styles.buttonText}>Ver Menú</Text>

@@ -127,13 +127,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#f5f5f5', // Light gray background
+    backgroundColor: 'white',
   },
   title: {
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 10,
-    color: '#263238', // Dark blue text
+    color: '#263238',
   },
   tablesContainer: {
     marginBottom: 20,
@@ -142,14 +142,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 5,
-    color: '#263238', // Dark blue text
+    color: '#263238', 
   },
   table: {
     backgroundColor: '#fff',
     padding: 10,
     marginRight: 10,
     borderRadius: 5,
-    shadowColor: '#ccc', // Light gray shadow
+    shadowColor: '#ccc',
     shadowOffset: {
       width: 0,
       height: 2,
@@ -161,15 +161,15 @@ const styles = StyleSheet.create({
   tableText: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#263238', // Dark blue text
+    color: '#263238',
   },
   addButton: {
-    backgroundColor: '#007bff', // Blue button
+    backgroundColor: '#007bff',
     padding: 10,
     borderRadius: 5,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#ccc', // Light gray shadow
+    shadowColor: '#ccc', 
     shadowOffset: {
       width: 0,
       height: 2,
@@ -181,28 +181,28 @@ const styles = StyleSheet.create({
   addButtonLabel: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#fff', // White text on button
+    color: '#fff', 
   },
   libre: {
-    backgroundColor: '#d4edda', // Light green
+    backgroundColor: '#d4edda',
   },
   ocupada: {
-    backgroundColor: '#f8d7da', // Light red
+    backgroundColor: '#f8d7da',
   },
   ordersTitle: {
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 10,
-    color: '#263238', // Dark blue text
+    color: '#263238', 
   },
   orderContainer: {
     borderWidth: 1,
-    borderColor: '#ccc', // Light gray border
+    borderColor: '#ccc', 
     padding: 10,
     marginBottom: 10,
     borderRadius: 5,
     backgroundColor: '#fff',
-    shadowColor: '#ccc', // Light gray shadow
+    shadowColor: '#ccc',
     shadowOffset: {
       width: 0,
       height: 2,
@@ -213,20 +213,20 @@ const styles = StyleSheet.create({
   },
   orderText: {
     fontSize: 16,
-    color: '#263238', // Dark blue text
+    color: '#263238', 
   },
   orderItem: {
     marginLeft: 20,
     fontSize: 14,
-    color: '#666', // Gray text
+    color: '#666', 
   },
   entregadoButton: {
-    backgroundColor: '#28a745', // Green button
+    backgroundColor: '#28a745', 
     padding: 10,
     borderRadius: 5,
     marginTop: 10,
     alignSelf: 'flex-start',
-    shadowColor: '#ccc', // Light gray shadow
+    shadowColor: '#ccc',
     shadowOffset: {
       width: 0,
       height: 2,
@@ -238,16 +238,16 @@ const styles = StyleSheet.create({
   entregadoButtonText: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#fff', // White text on button
+    color: '#fff', 
   },
   cocinaButton: {
-    backgroundColor: '#ffc107', // Yellow button
+    backgroundColor: '#ffc107', 
     padding: 10,
     borderRadius: 5,
     marginBottom: 10,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#ccc', // Light gray shadow
+    shadowColor: '#ccc',
     shadowOffset: {
       width: 0,
       height: 2,
